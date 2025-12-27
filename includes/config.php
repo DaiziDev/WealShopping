@@ -1,18 +1,36 @@
-
 <?php
 // Include error reporting
 require_once 'error_reporting.php';
 
 session_start();
+
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'elitestyle_shop');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
+// Dynamically determine site URL
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'];
+$script = $_SERVER['SCRIPT_NAME'];
+$base_path = dirname($script);
+
+// Remove any double slashes and ensure it ends with /
+$base_path = rtrim($base_path, '/') . '/';
+$base_path = str_replace('//', '/', $base_path);
+
+// For localhost, we need to adjust the path
+if (strpos($host, 'localhost') !== false) {
+    // Get the project folder name
+    $project_folder = basename(dirname(__FILE__, 2)); // Go up 2 levels from includes/
+    define('SITE_URL', "{$protocol}://{$host}/{$project_folder}/");
+} else {
+    define('SITE_URL', "{$protocol}://{$host}{$base_path}");
+}
+
 // Site configuration
 define('SITE_NAME', 'WealShopping');
-define('SITE_URL', 'http://localhost/fashion-shop/');
 define('ADMIN_EMAIL', 'admin@wealshopping.com');
 
 // Payment configuration for Cameroon
@@ -50,7 +68,20 @@ function getCategories($parent_id = null) {
     
     return $stmt->fetchAll();
 }
+// Function to get absolute URL for assets
+function asset_url($path) {
+    return SITE_URL . 'assets/' . ltrim($path, '/');
+}
 
+// Function to get URL for pages
+function page_url($page) {
+    return SITE_URL . 'pages/' . ltrim($page, '/');
+}
+
+// Function to get site URL
+function site_url($path = '') {
+    return SITE_URL . ltrim($path, '/');
+}
 // Function to get featured products - FIXED VERSION
 function getFeaturedProducts($limit = 8) {
     global $pdo;

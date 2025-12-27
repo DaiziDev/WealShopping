@@ -95,14 +95,26 @@ require_once '../includes/header.php';
                         <input type="tel" id="phone" name="phone" class="form-control" required>
                     </div>
                     
+                    <!-- For password field -->         
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" class="form-control" required>
+                        <div class="password-toggle">
+                            <input type="password" id="password" name="password" class="form-control" required>
+                            <button type="button" class="password-toggle-btn" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
-                    
+
+                    <!-- For confirm password field -->
                     <div class="form-group">
                         <label for="confirm_password">Confirm Password</label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                        <div class="password-toggle">
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                            <button type="button" class="password-toggle-btn" id="toggleConfirmPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <button type="submit" class="btn btn-primary btn-block">Create Account</button>

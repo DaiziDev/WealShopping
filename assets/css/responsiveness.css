@@ -1,0 +1,413 @@
+/* ===== Enhanced Responsive Styles ===== */
+/* Mobile Menu Fixes */
+.menu-toggle {
+    display: none !important;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+    position: relative;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--dark-color);
+    border-radius: 3px;
+    transition: var(--transition-medium);
+}
+
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: white;
+    z-index: 1000;
+    padding: 80px 20px 20px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+.mobile-menu.active {
+    transform: translateX(0);
+}
+
+/* Show menu toggle only on mobile */
+@media (max-width: 992px) {
+    .menu-toggle {
+        display: flex !important;
+    }
+    
+    .nav-menu {
+        display: none !important;
+    }
+}
+
+/* Prevent body scroll when menu is open */
+body.menu-open {
+    overflow: hidden !important;
+}
+
+/* Debug styles */
+#menuToggle.debug {
+    background: red !important;
+    border: 2px solid yellow !important;
+}
+/* Large Tablets */
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 20px;
+    }
+    
+    .auth-container {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+    
+    .auth-container.reverse {
+        grid-template-columns: 1fr;
+    }
+    
+    .auth-image {
+        height: 300px;
+        min-height: 300px;
+        order: -1;
+    }
+    
+    .auth-form {
+        padding: 2.5rem;
+    }
+    
+    .categories-grid,
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .shop-content {
+        flex-direction: column;
+    }
+    
+    .shop-sidebar {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+    .auth-section {
+        padding-top: 80px;
+        padding-bottom: 40px;
+    }
+    
+    .auth-form {
+        padding: 2rem;
+    }
+    
+    .auth-form h2 {
+        font-size: 1.8rem;
+    }
+    
+    .auth-subtitle {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    
+    /* Fix for form row on mobile */
+    .row {
+        flex-direction: column;
+        margin: 0;
+    }
+    
+    .row .col-6 {
+        width: 100%;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .row .col-6:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Password toggle adjustments */
+    .password-toggle {
+        position: relative;
+    }
+    
+    .password-toggle .form-control {
+        padding-right: 50px;
+    }
+    
+    .password-toggle-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--gray-color);
+        transition: var(--transition-fast);
+    }
+    
+    .password-toggle-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Button adjustments */
+    .btn {
+        padding: 0.85rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .btn-block {
+        width: 100%;
+    }
+    
+    /* Alert adjustments */
+    .alert {
+        padding: 0.875rem 1.25rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.9rem;
+    }
+    
+    .auth-links {
+        margin-top: 1.25rem;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .auth-links a {
+        text-align: center;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 576px) {
+    .auth-section {
+        padding: 60px 15px 30px;
+    }
+    
+    .container {
+        padding: 0 15px;
+    }
+    
+    .auth-container {
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .auth-image {
+        height: 200px;
+        min-height: 200px;
+    }
+    
+    .auth-form {
+        padding: 1.5rem;
+    }
+    
+    .auth-form h2 {
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    /* Form input adjustments */
+    .form-control {
+        padding: 0.7rem 0.875rem;
+        font-size: 0.95rem;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 0.375rem;
+    }
+    
+    /* Password toggle for small screens */
+    .password-toggle .form-control {
+        padding-right: 45px;
+        font-size: 0.95rem;
+    }
+    
+    .password-toggle-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    
+    /* Button adjustments */
+    .btn {
+        padding: 0.8rem 1.25rem;
+        font-size: 0.95rem;
+    }
+    
+    /* Alert for small screens */
+    .alert {
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Additional spacing for better touch targets */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    /* Make form inputs easier to tap */
+    input, button, .btn {
+        min-height: 44px; /* Minimum touch target size */
+    }
+}
+
+/* Very Small Mobile */
+@media (max-width: 400px) {
+    .auth-section {
+        padding: 50px 10px 20px;
+    }
+    
+    .container {
+        padding: 0 10px;
+    }
+    
+    .auth-form {
+        padding: 1.25rem;
+    }
+    
+    .auth-form h2 {
+        font-size: 1.4rem;
+    }
+    
+    .auth-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .alert {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* Fix for landscape orientation on mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    .auth-section {
+        padding-top: 70px;
+        padding-bottom: 20px;
+    }
+    
+    .auth-container {
+        min-height: auto;
+    }
+    
+    .auth-image {
+        height: 150px;
+        min-height: 150px;
+    }
+    
+    .auth-form {
+        padding: 1.25rem;
+        max-height: calc(100vh - 220px);
+        overflow-y: auto;
+    }
+    
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+    
+    .btn {
+        padding: 0.6rem 1rem;
+    }
+}
+
+/* Fix for Safari Mobile input zoom */
+@media screen and (max-width: 767px) {
+    input,
+    select,
+    textarea {
+        font-size: 16px; /* Prevents zoom on focus in iOS Safari */
+    }
+}
+
+/* High-resolution screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .auth-container {
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .form-control:focus {
+        box-shadow: 0 0 0 4px rgba(255, 77, 109, 0.1);
+    }
+}
+
+/* Print styles */
+@media print {
+    .auth-section {
+        padding: 0;
+        min-height: auto;
+    }
+    
+    .auth-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        min-height: auto;
+    }
+    
+    .auth-image {
+        display: none;
+    }
+    
+    .auth-form {
+        padding: 1rem;
+    }
+    
+    .btn {
+        display: none;
+    }
+}

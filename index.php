@@ -15,16 +15,16 @@ $categories = getCategories();
                 <div class="slide-content">
                     <h1 class="slide-title">New Collection 2024</h1>
                     <p class="slide-subtitle">Discover exclusive designs for the modern lifestyle</p>
-                    <a href="pages/shop.php" class="btn btn-primary">Shop Now</a>
+                    <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-primary">Shop Now</a>
                 </div>
-                <div class="slide-image" style="background-image: url('assets/images/woman-shopping-thrift-store.jpg');">
+                <div class="slide-image" style="background-image: url('<?php echo asset_url('images/woman-shopping-thrift-store.jpg'); ?>');">
                 </div>
             </div>
             <div class="slide">
                 <div class="slide-content">
                     <h1 class="slide-title">Premium Footwear</h1>
                     <p class="slide-subtitle">Step into comfort with our luxury shoe collection</p>
-                    <a href="pages/shop.php?category=footwear" class="btn btn-primary">Explore Shoes</a>
+                    <a href="<?php echo page_url('shop.php?category=footwear'); ?>" class="btn btn-primary">Explore Shoes</a>
                 </div>
                 <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');">
                 </div>
@@ -33,9 +33,9 @@ $categories = getCategories();
                 <div class="slide-content">
                     <h1 class="slide-title">Summer Essentials</h1>
                     <p class="slide-subtitle">Lightweight fabrics and vibrant colors</p>
-                    <a href="pages/shop.php" class="btn btn-primary">View Collection</a>
+                    <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-primary">View Collection</a>
                 </div>
-                <div class="slide-image" style="background-image: url('assets/images/model-career-kit-still-life.jpg');">
+                <div class="slide-image" style="background-image: url('<?php echo asset_url('images/model-career-kit-still-life.jpg'); ?>');">
                 </div>
             </div>
         </div>
@@ -57,14 +57,16 @@ $categories = getCategories();
             <p class="section-subtitle">Find exactly what you're looking for</p>
             
             <div class="categories-grid">
-                <?php foreach ($categories as $category): ?>
+                <?php foreach ($categories as $category): 
+                    $category_image = !empty($category['image_url']) ? $category['image_url'] : asset_url('images/still-life-rendering-jackets-display.jpg');
+                ?>
                 <div class="category-card">
-                    <div class="category-image" style="background-image: url('<?php echo $category['image_url'] ?: 'assets/images/still-life-rendering-jackets-display.jpg'; ?>');">
+                    <div class="category-image" style="background-image: url('<?php echo $category_image; ?>');">
                     </div>
                     <div class="category-content">
-                        <h3><?php echo $category['name']; ?></h3>
-                        <p><?php echo $category['description']; ?></p>
-                        <a href="pages/shop.php?category=<?php echo $category['slug']; ?>" class="btn btn-outline">Browse</a>
+                        <h3><?php echo htmlspecialchars($category['name']); ?></h3>
+                        <p><?php echo htmlspecialchars($category['description']); ?></p>
+                        <a href="<?php echo page_url('shop.php?category=' . $category['slug']); ?>" class="btn btn-outline">Browse</a>
                     </div>
                 </div>
                 <?php endforeach; ?>
@@ -78,14 +80,14 @@ $categories = getCategories();
             <div class="section-header">
                 <h2 class="section-title">Featured Products</h2>
                 <p class="section-subtitle">Curated selections of our finest items</p>
-                <a href="pages/shop.php" class="btn-link">View All <i class="fas fa-arrow-right"></i></a>
+                <a href="<?php echo page_url('shop.php'); ?>" class="btn-link">View All <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <div class="products-grid">
                 <?php if (count($featured_products) > 0): ?>
                     <?php foreach ($featured_products as $product): 
                         // Get default image if not available
-                        $image_url = !empty($product['image_url']) ? $product['image_url'] : 'assets/images/still-life-rendering-jackets-display.jpg';
+                        $image_url = !empty($product['image_url']) ? $product['image_url'] : asset_url('images/still-life-rendering-jackets-display.jpg');
                     ?>
                     <div class="product-card">
                         <div class="product-image" style="background-image: url('<?php echo $image_url; ?>');">
@@ -125,13 +127,14 @@ $categories = getCategories();
             </div>
         </div>
     </section>
+
     <!-- Promo Banner -->
     <section class="promo-banner">
         <div class="container">
             <div class="promo-content">
                 <h2>Limited Time Offer</h2>
                 <p>Get 30% off on all summer collection items. Use code: <strong>SUMMER30</strong></p>
-                <a href="pages/shop.php" class="btn btn-light">Shop the Sale</a>
+                <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-light">Shop the Sale</a>
             </div>
         </div>
     </section>
@@ -162,7 +165,7 @@ $categories = getCategories();
                         </div>
                     </div>
                 </div>
-                <div class="about-image" style="background-image: url('assets/images/still-life-rendering-jackets-display.jpg');">
+                <div class="about-image" style="background-image: url('<?php echo asset_url('images/still-life-rendering-jackets-display.jpg'); ?>');">
                 </div>
             </div>
         </div>
