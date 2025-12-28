@@ -92,7 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         continue;
                     }
                     
-                    // Move uploaded file
                     if (move_uploaded_file($file_tmp, $file_path)) {
                         // First image is set as main
                         $is_main = $main_image_set ? 0 : 1;
