@@ -5,7 +5,7 @@ require_once '../includes/config.php';
 $category_slug = isset($_GET['category']) ? sanitize($_GET['category']) : '';
 $search = isset($_GET['search']) ? sanitize($_GET['search']) : '';
 $min_price = isset($_GET['min_price']) ? floatval($_GET['min_price']) : 0;
-$max_price = isset($_GET['max_price']) ? floatval($_GET['max_price']) : 1000;
+$max_price = isset($_GET['max_price']) ? floatval($_GET['max_price']) : 500000;
 $sort = isset($_GET['sort']) ? sanitize($_GET['sort']) : 'newest';
 
 // Pagination
@@ -75,9 +75,9 @@ require_once '../includes/header.php';
                     <h3>Price Range</h3>
                     <form method="GET" class="price-filter">
                         <div class="price-inputs">
-                            <input type="number" name="min_price" placeholder="Min" value="<?php echo $min_price; ?>" min="0">
+                            <input type="number" name="min_price" placeholder="Min" value="<?php echo $min_price; ?>" min="0" step="1000">
                             <span>to</span>
-                            <input type="number" name="max_price" placeholder="Max" value="<?php echo $max_price; ?>" min="0">
+                            <input type="number" name="max_price" placeholder="Max" value="<?php echo $max_price; ?>" min="0" step="1000">
                         </div>
                         <?php if (!empty($category_slug)): ?>
                         <input type="hidden" name="category" value="<?php echo htmlspecialchars($category_slug); ?>">
@@ -113,11 +113,11 @@ require_once '../includes/header.php';
                 <div class="products-grid">
                     <?php if (count($products) > 0): ?>
                         <?php foreach ($products as $product): 
-                            // Get default image if not available
-                            $image_url = !empty($product['image_url']) ? $product['image_url'] : '../assets/images/still-life-rendering-jackets-display.jpg';
+                            // Get image URL using the fixed function
+                            $image_url = get_product_image_url($product['image_url']);
                         ?>
                         <div class="product-card">
-                            <div class="product-image" style="background-image: url('<?php echo $image_url; ?>');">
+                            <div class="product-image" style="background-image: url('<?php echo htmlspecialchars($image_url); ?>');">
                                 <?php if ($product['compare_price'] && $product['compare_price'] > $product['price']): ?>
                                 <span class="product-badge sale">Sale</span>
                                 <?php elseif ($product['featured']): ?>
@@ -133,9 +133,9 @@ require_once '../includes/header.php';
                                 </h3>
                                 <p class="product-category"><?php echo htmlspecialchars($product['brand'] ?: 'EliteStyle'); ?></p>
                                 <div class="product-price">
-                                    <span class="current-price">$<?php echo number_format($product['price'], 2); ?></span>
+                                    <span class="product-price"><?php echo format_price($product['price']); ?></span>
                                     <?php if ($product['compare_price'] && $product['compare_price'] > $product['price']): ?>
-                                    <span class="original-price">$<?php echo number_format($product['compare_price'], 2); ?></span>
+                                    <span class="original-price"><?php echo format_price($product['compare_price']); ?></span>
                                     <?php endif; ?>
                                 </div>
                                 <button class="btn btn-sm add-to-cart" 

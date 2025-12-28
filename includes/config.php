@@ -1,8 +1,13 @@
 <?php
+// includes/config.php
+
 // Include error reporting
 require_once 'error_reporting.php';
 
-session_start();
+// Fix: Check if session is already started before starting it
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Database configuration
 define('DB_HOST', 'localhost');
@@ -10,32 +15,50 @@ define('DB_NAME', 'elitestyle_shop');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
-// Dynamically determine site URL
+// Dynamically determine site URL - SIMPLIFIED VERSION
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
-$script = $_SERVER['SCRIPT_NAME'];
-$base_path = dirname($script);
 
-// Remove any double slashes and ensure it ends with /
-$base_path = rtrim($base_path, '/') . '/';
-$base_path = str_replace('//', '/', $base_path);
+// Get the current script directory
+$script_dir = dirname($_SERVER['SCRIPT_NAME']);
 
-// For localhost, we need to adjust the path
+// For localhost development
 if (strpos($host, 'localhost') !== false) {
-    // Get the project folder name
-    $project_folder = basename(dirname(__FILE__, 2)); // Go up 2 levels from includes/
+    // Get project folder name
+    $project_folder = basename(dirname(__DIR__)); // Go up one level from includes/
     define('SITE_URL', "{$protocol}://{$host}/{$project_folder}/");
+    // Define absolute path for file operations
+    define('ROOT_PATH', dirname(__DIR__) . '/');
 } else {
-    define('SITE_URL', "{$protocol}://{$host}{$base_path}");
+    // For live server
+    define('SITE_URL', "{$protocol}://{$host}{$script_dir}/");
+    define('ROOT_PATH', $_SERVER['DOCUMENT_ROOT'] . $script_dir . '/');
 }
 
 // Site configuration
 define('SITE_NAME', 'WealShopping');
 define('ADMIN_EMAIL', 'admin@wealshopping.com');
 
-// Payment configuration for Cameroon
-define('MTN_MOBILE_MONEY', '+237 6XX XXX XXX');
-define('ORANGE_MONEY', '+237 6XX XXX XXX');
+// Currency configuration for Cameroon
+if (!defined('CURRENCY')) {
+    define('CURRENCY', 'FCFA');
+    define('CURRENCY_SYMBOL', 'FCFA');
+    define('CURRENCY_CODE', 'XAF');
+}
+
+// Payment configuration
+if (!defined('MTN_MOBILE_MONEY')) {
+    define('MTN_MOBILE_MONEY', '+237 6XX XXX XXX');
+}
+
+if (!defined('ORANGE_MONEY')) {
+    define('ORANGE_MONEY', '+237 6XX XXX XXX');
+}
+
+// Image upload configuration
+define('UPLOAD_PATH', 'assets/images/products/');
+define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB
+define('ALLOWED_IMAGE_TYPES', ['jpg', 'jpeg', 'png', 'gif', 'webp']);
 
 // Create database connection
 try {
@@ -47,28 +70,21 @@ try {
     die("Connection failed: " . $e->getMessage());
 }
 
-// Function to get categories
-function getCategories($parent_id = null) {
-    global $pdo;
-    
-    $sql = "SELECT * FROM categories WHERE is_active = 1";
-    if ($parent_id === null) {
-        $sql .= " AND parent_id IS NULL";
-    } else {
-        $sql .= " AND parent_id = ?";
+// Function to format price in FCFA
+if (!function_exists('format_price')) {
+    function format_price($amount) {
+        return number_format($amount, 0, '', ' ') . ' ' . CURRENCY_SYMBOL;
     }
-    $sql .= " ORDER BY name";
-    
-    $stmt = $pdo->prepare($sql);
-    if ($parent_id === null) {
-        $stmt->execute();
-    } else {
-        $stmt->execute([$parent_id]);
-    }
-    
-    return $stmt->fetchAll();
 }
-// Function to get absolute URL for assets
+
+// Function to get price with FCFA symbol
+if (!function_exists('price_with_currency')) {
+    function price_with_currency($amount) {
+        return format_price($amount);
+    }
+}
+
+// Function to get absolute URL for assets - UPDATED
 function asset_url($path) {
     return SITE_URL . 'assets/' . ltrim($path, '/');
 }
@@ -82,7 +98,8 @@ function page_url($page) {
 function site_url($path = '') {
     return SITE_URL . ltrim($path, '/');
 }
-// Function to get featured products - FIXED VERSION
+
+// Function to get featured products
 function getFeaturedProducts($limit = 8) {
     global $pdo;
     
@@ -154,6 +171,128 @@ function generateOrderNumber() {
     return 'ORD-' . date('Ymd') . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
 }
 
+// CORRECTED FUNCTION: Get product image URL - SIMPLIFIED VERSION
+function get_product_image_url($image_path, $return_default = true) {
+    // If empty and we want default
+    if (empty($image_path) && $return_default) {
+        return SITE_URL . 'assets/images/still-life-rendering-jackets-display.jpg';
+    }
+    
+    // If already a full URL (from external sources)
+    if (filter_var($image_path, FILTER_VALIDATE_URL)) {
+        return $image_path;
+    }
+    
+    // If it starts with assets/, it's already a relative path from root
+    if (strpos($image_path, 'assets/') === 0) {
+        return SITE_URL . $image_path;
+    }
+    
+    // If it starts with uploads/ (common for uploaded files)
+    if (strpos($image_path, 'uploads/') === 0) {
+        return SITE_URL . $image_path;
+    }
+    
+    // For product images in the database
+    if (strpos($image_path, 'products/') !== false) {
+        return SITE_URL . 'assets/images/' . $image_path;
+    }
+    
+    // Default: assume it's in the products folder
+    return SITE_URL . 'assets/images/products/' . $image_path;
+}
+
+// NEW FUNCTION: Upload image and return relative path
+function upload_product_image($file, $product_id = 0) {
+    $errors = [];
+    
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        $errors[] = "Upload error: " . $file['error'];
+        return ['success' => false, 'errors' => $errors];
+    }
+    
+    // Check file size
+    if ($file['size'] > MAX_UPLOAD_SIZE) {
+        $errors[] = "File is too large. Maximum size is 5MB.";
+        return ['success' => false, 'errors' => $errors];
+    }
+    
+    // Check file type
+    $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($file_ext, ALLOWED_IMAGE_TYPES)) {
+        $errors[] = "Only JPG, PNG, GIF, and WebP files are allowed.";
+        return ['success' => false, 'errors' => $errors];
+    }
+    
+    // Generate unique filename
+    $filename = 'product_' . ($product_id ? $product_id . '_' : '') . time() . '_' . uniqid() . '.' . $file_ext;
+    $upload_dir = ROOT_PATH . UPLOAD_PATH;
+    
+    // Create directory if it doesn't exist
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+    
+    // Move uploaded file
+    $destination = $upload_dir . $filename;
+    
+    if (move_uploaded_file($file['tmp_name'], $destination)) {
+        // Return relative path (without ROOT_PATH)
+        $relative_path = UPLOAD_PATH . $filename;
+        return [
+            'success' => true,
+            'path' => $relative_path,
+            'url' => SITE_URL . $relative_path,
+            'filename' => $filename
+        ];
+    } else {
+        $errors[] = "Failed to move uploaded file.";
+        return ['success' => false, 'errors' => $errors];
+    }
+}
+
+// NEW FUNCTION: Delete image file
+function delete_image_file($image_path) {
+    if (empty($image_path)) {
+        return true;
+    }
+    
+    // Extract filename from URL if it's a full URL
+    if (filter_var($image_path, FILTER_VALIDATE_URL)) {
+        $image_path = str_replace(SITE_URL, '', $image_path);
+    }
+    
+    $full_path = ROOT_PATH . $image_path;
+    
+    if (file_exists($full_path) && is_file($full_path)) {
+        return unlink($full_path);
+    }
+    
+    return true;
+}
+
+// Function to get categories
+function getCategories($parent_id = null) {
+    global $pdo;
+    
+    $sql = "SELECT * FROM categories WHERE is_active = 1";
+    if ($parent_id === null) {
+        $sql .= " AND parent_id IS NULL";
+    } else {
+        $sql .= " AND parent_id = ?";
+    }
+    $sql .= " ORDER BY name";
+    
+    $stmt = $pdo->prepare($sql);
+    if ($parent_id === null) {
+        $stmt->execute();
+    } else {
+        $stmt->execute([$parent_id]);
+    }
+    
+    return $stmt->fetchAll();
+}
+
 // Initialize cart if not exists
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
@@ -181,8 +320,8 @@ function getCartCount() {
     return $count;
 }
 
-// Simple function to get products with pagination
-function getProducts($category_slug = '', $search = '', $min_price = 0, $max_price = 1000, $sort = 'newest', $limit = 12, $offset = 0) {
+// Function to get products with pagination
+function getProducts($category_slug = '', $search = '', $min_price = 0, $max_price = 10000000, $sort = 'newest', $limit = 12, $offset = 0) {
     global $pdo;
     
     $sql = "SELECT p.*, pi.image_url 
@@ -235,7 +374,7 @@ function getProducts($category_slug = '', $search = '', $min_price = 0, $max_pri
 }
 
 // Count total products for pagination
-function countProducts($category_slug = '', $search = '', $min_price = 0, $max_price = 1000) {
+function countProducts($category_slug = '', $search = '', $min_price = 0, $max_price = 10000000) {
     global $pdo;
     
     $sql = "SELECT COUNT(*) as total FROM products p WHERE p.is_active = 1 AND p.quantity > 0";

@@ -41,8 +41,8 @@
                 <div class="footer-col">
                     <h3>Contact Info</h3>
                     <ul class="contact-info">
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Fashion Street, New York, NY 10001</li>
-                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 237 Cameroon, Yaoundé mobile essos</li>
+                        <li><i class="fas fa-phone"></i> +237 696 86 27 83</li>
                         <li><i class="fas fa-envelope"></i> info@wealshopping.com</li>
                     </ul>
                     <div class="newsletter">

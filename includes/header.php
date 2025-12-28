@@ -1,6 +1,9 @@
 <?php
 require_once 'config.php';
 
+if (!isset($pdo)) {
+    require_once 'config.php';
+}
 // Get current page and query parameters
 $current_page = basename($_SERVER['PHP_SELF']);
 $current_category = isset($_GET['category']) ? $_GET['category'] : '';

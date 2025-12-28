@@ -13,7 +13,7 @@ $categories = getCategories();
         <div class="hero-slider">
             <div class="slide active">
                 <div class="slide-content">
-                    <h1 class="slide-title">New Collection 2024</h1>
+                    <h1 class="slide-title">New Collection 2026</h1>
                     <p class="slide-subtitle">Discover exclusive designs for the modern lifestyle</p>
                     <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-primary">Shop Now</a>
                 </div>
@@ -35,7 +35,7 @@ $categories = getCategories();
                     <p class="slide-subtitle">Lightweight fabrics and vibrant colors</p>
                     <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-primary">View Collection</a>
                 </div>
-                <div class="slide-image" style="background-image: url('<?php echo asset_url('images/model-career-kit-still-life.jpg'); ?>');">
+                <div class="slide-image" style="background-image: url('../fashion-shop/assets/images/accesories.jpg');">
                 </div>
             </div>
         </div>
@@ -57,19 +57,49 @@ $categories = getCategories();
             <p class="section-subtitle">Find exactly what you're looking for</p>
             
             <div class="categories-grid">
-                <?php foreach ($categories as $category): 
-                    $category_image = !empty($category['image_url']) ? $category['image_url'] : asset_url('images/still-life-rendering-jackets-display.jpg');
-                ?>
+                <!-- Category 1: Clothing -->
                 <div class="category-card">
-                    <div class="category-image" style="background-image: url('<?php echo $category_image; ?>');">
+                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/womens.jpg'); ?>');">
                     </div>
                     <div class="category-content">
-                        <h3><?php echo htmlspecialchars($category['name']); ?></h3>
-                        <p><?php echo htmlspecialchars($category['description']); ?></p>
-                        <a href="<?php echo page_url('shop.php?category=' . $category['slug']); ?>" class="btn btn-outline">Browse</a>
+                        <h3>Clothing</h3>
+                        <p>Discover our premium clothing collection for all occasions</p>
+                        <a href="<?php echo page_url('shop.php?category=clothing'); ?>" class="btn btn-outline">Browse Clothing</a>
                     </div>
                 </div>
-                <?php endforeach; ?>
+                
+                <!-- Category 2: Footwear -->
+                <div class="category-card">
+                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/footwear.jpg'); ?>');">
+                    </div>
+                    <div class="category-content">
+                        <h3>Footwear</h3>
+                        <p>Stylish and comfortable shoes for every step</p>
+                        <a href="<?php echo page_url('shop.php?category=footwear'); ?>" class="btn btn-outline">Browse Shoes</a>
+                    </div>
+                </div>
+                
+                <!-- Category 3: Accessories -->
+                <div class="category-card">
+                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/accesories2.jpg'); ?>');">
+                    </div>
+                    <div class="category-content">
+                        <h3>Accessories</h3>
+                        <p>Complete your look with our premium accessories</p>
+                        <a href="<?php echo page_url('shop.php?category=accessories'); ?>" class="btn btn-outline">Browse Accessories</a>
+                    </div>
+                </div>
+                
+                <!-- Category 4: Bags -->
+                <div class="category-card">
+                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/bags.jpg'); ?>');">
+                    </div>
+                    <div class="category-content">
+                        <h3>Bags & Luggage</h3>
+                        <p>Carry your essentials in style with our bag collection</p>
+                        <a href="<?php echo page_url('shop.php?category=bags'); ?>" class="btn btn-outline">Browse Bags</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -88,13 +118,17 @@ $categories = getCategories();
                     <?php foreach ($featured_products as $product): 
                         // Get default image if not available
                         $image_url = !empty($product['image_url']) ? $product['image_url'] : asset_url('images/still-life-rendering-jackets-display.jpg');
+                        
+                        // Format prices in FCFA
+                        $price_fcfa = $product['price'];
+                        $compare_price_fcfa = $product['compare_price'] ? $product['compare_price'] : null;
                     ?>
                     <div class="product-card">
                         <div class="product-image" style="background-image: url('<?php echo $image_url; ?>');">
-                            <?php if ($product['compare_price'] && $product['compare_price'] > $product['price']): ?>
-                            <span class="product-badge sale">Sale</span>
+                            <?php if ($compare_price_fcfa && $compare_price_fcfa > $price_fcfa): ?>
+                            <span class="product-badge sale">Promotion</span>
                             <?php else: ?>
-                            <span class="product-badge">New</span>
+                            <span class="product-badge">Nouveau</span>
                             <?php endif; ?>
                             <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>">
                                 <i class="far fa-heart"></i>
@@ -104,24 +138,24 @@ $categories = getCategories();
                             <h3 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h3>
                             <p class="product-category"><?php echo htmlspecialchars($product['brand'] ?: 'EliteStyle'); ?></p>
                             <div class="product-price">
-                                <span class="current-price">$<?php echo number_format($product['price'], 2); ?></span>
-                                <?php if ($product['compare_price'] && $product['compare_price'] > $product['price']): ?>
-                                <span class="original-price">$<?php echo number_format($product['compare_price'], 2); ?></span>
+                                <span class="current-price"><?php echo format_price($price_fcfa); ?></span>
+                                <?php if ($compare_price_fcfa && $compare_price_fcfa > $price_fcfa): ?>
+                                <span class="original-price"><?php echo format_price($compare_price_fcfa); ?></span>
                                 <?php endif; ?>
                             </div>
                             <button class="btn btn-sm add-to-cart" 
                                     data-product-id="<?php echo $product['id']; ?>" 
                                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>" 
-                                    data-product-price="<?php echo $product['price']; ?>"
+                                    data-product-price="<?php echo $price_fcfa; ?>"
                                     data-image-url="<?php echo htmlspecialchars($image_url); ?>">
-                                Add to Cart
+                                Ajouter au panier
                             </button>
                         </div>
                     </div>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <div class="no-products">
-                        <p>No featured products available at the moment.</p>
+                        <p>Aucun produit en vedette disponible pour le moment.</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -132,9 +166,9 @@ $categories = getCategories();
     <section class="promo-banner">
         <div class="container">
             <div class="promo-content">
-                <h2>Limited Time Offer</h2>
-                <p>Get 30% off on all summer collection items. Use code: <strong>SUMMER30</strong></p>
-                <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-light">Shop the Sale</a>
+                <h2>Offre limitée</h2>
+                <p>Obtenez 30% de réduction sur tous les articles de la collection été. Code : <strong>ETE30</strong></p>
+                <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-light">Profitez des soldes</a>
             </div>
         </div>
     </section>
@@ -144,28 +178,28 @@ $categories = getCategories();
         <div class="container">
             <div class="about-grid">
                 <div class="about-content">
-                    <h2 class="section-title">Our Story</h2>
-                    <p>WealShopping was founded with a simple mission: to provide premium fashion that combines style, comfort, and sustainability. We believe that everyone deserves to feel confident and express their unique personality through clothing.</p>
-                    <p>Our collections are carefully curated from designers around the world, focusing on quality materials and timeless designs that transcend seasonal trends.</p>
+                    <h2 class="section-title">Notre Histoire</h2>
+                    <p>WealShopping a été fondé avec une mission simple : fournir des vêtements de qualité qui allient style, confort et durabilité. Nous croyons que tout le monde mérite de se sentir en confiance et d'exprimer sa personnalité unique à travers ses vêtements.</p>
+                    <p>Nos collections sont soigneusement sélectionnées auprès de designers du monde entier, en mettant l'accent sur des matériaux de qualité et des designs intemporels qui transcendent les tendances saisonnières.</p>
                     <div class="about-features">
                         <div class="feature">
                             <i class="fas fa-truck"></i>
-                            <h4>Fast Delivery in Cameroon</h4>
-                            <p>Same-day delivery in major cities</p>
+                            <h4>Livraison rapide au Cameroun</h4>
+                            <p>Livraison le jour même dans les grandes villes</p>
                         </div>
                         <div class="feature">
                             <i class="fas fa-mobile-alt"></i>
-                            <h4>Mobile Money Payments</h4>
-                            <p>Pay with MTN or Orange Money</p>
+                            <h4>Paiements Mobile Money</h4>
+                            <p>Payez avec MTN ou Orange Money</p>
                         </div>
                         <div class="feature">
                             <i class="fas fa-shield-alt"></i>
-                            <h4>Secure Shopping</h4>
-                            <p>100% secure payment gateway</p>
+                            <h4>Achats sécurisés</h4>
+                            <p>Passerelle de paiement 100% sécurisée</p>
                         </div>
                     </div>
                 </div>
-                <div class="about-image" style="background-image: url('<?php echo asset_url('images/still-life-rendering-jackets-display.jpg'); ?>');">
+                <div class="about-image" style="background-image: url('<?php echo asset_url('images/WealShopping.png'); ?>');">
                 </div>
             </div>
         </div>

@@ -73,7 +73,7 @@ require_once '../includes/header.php';
                 </div>
                 
                 <div class="product-price">
-                    <span class="current-price">$<?php echo number_format($product['price'], 2); ?></span>
+                    <p class="price"><?php echo format_price($product['price']); ?></p>
                     <?php if ($product['compare_price'] && $product['compare_price'] > $product['price']): ?>
                     <span class="original-price">$<?php echo number_format($product['compare_price'], 2); ?></span>
                     <?php endif; ?>

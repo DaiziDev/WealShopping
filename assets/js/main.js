@@ -482,7 +482,10 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         }
     });
 });
-
+// Example: In your cart JavaScript
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' FCFA';
+}
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeAll);
 
