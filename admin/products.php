@@ -34,6 +34,31 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     exit();
 }
 
+// Handle permanent deletion
+if (isset($_GET['permanent_delete']) && is_numeric($_GET['permanent_delete'])) {
+    $product_id = $_GET['permanent_delete'];
+    
+    // Get all images for this product
+    $sql = "SELECT image_url FROM product_images WHERE product_id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$product_id]);
+    $images = $stmt->fetchAll();
+    
+    // Delete image files
+    foreach ($images as $image) {
+        delete_image_file($image['image_url']);
+    }
+    
+    // Delete from database
+    $sql = "DELETE FROM products WHERE id = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$product_id]);
+    
+    $_SESSION['success_message'] = "Product permanently deleted!";
+    header('Location: products.php');
+    exit();
+}
+
 // Handle product activation
 if (isset($_GET['activate']) && is_numeric($_GET['activate'])) {
     $product_id = $_GET['activate'];
@@ -337,12 +362,18 @@ $categories = $pdo->query("SELECT * FROM categories WHERE is_active = 1 ORDER BY
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if ($product['is_active']): ?>
-                                        <a href="?delete=<?php echo $product['id']; ?>" class="btn btn-sm btn-danger" title="Deactivate" onclick="return confirm('Are you sure you want to deactivate this product?')">
+                                        <a href="?delete=<?php echo $product['id']; ?>" class="btn btn-sm btn-danger" title="Deactivate" 
+                                        onclick="return confirm('Are you sure you want to deactivate this product?')">
                                             <i class="fas fa-ban"></i>
                                         </a>
                                         <?php else: ?>
                                         <a href="?activate=<?php echo $product['id']; ?>" class="btn btn-sm btn-success" title="Activate">
                                             <i class="fas fa-check"></i>
+                                        </a>
+                                        <!-- ✅ ADD THIS DELETE BUTTON FOR INACTIVE PRODUCTS -->
+                                        <a href="?permanent_delete=<?php echo $product['id']; ?>" class="btn btn-sm btn-danger" title="Permanently Delete"
+                                        onclick="return confirm('⚠️ WARNING: This will PERMANENTLY delete this product and all its images!\\n\\nThis action cannot be undone.\\n\\nAre you absolutely sure?')">
+                                            <i class="fas fa-trash-alt"></i>
                                         </a>
                                         <?php endif; ?>
                                     </div>

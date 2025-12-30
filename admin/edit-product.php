@@ -44,41 +44,8 @@ $categories = $pdo->query("SELECT * FROM categories WHERE is_active = 1 ORDER BY
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check if it's an image upload
-    if (isset($_FILES['new_images']) && !empty($_FILES['new_images']['name'][0])) {
-        // Handle new image upload
-        $upload_dir = '../../assets/images/products/';
-        
-        // Create directory if it doesn't exist
-        if (!file_exists($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-        
-        // Process each uploaded file
-        for ($i = 0; $i < count($_FILES['new_images']['name']); $i++) {
-            if ($_FILES['new_images']['error'][$i] == 0) {
-                $file_name = time() . '_' . $product_id . '_' . basename($_FILES['new_images']['name'][$i]);
-                $file_tmp = $_FILES['new_images']['tmp_name'][$i];
-                $file_path = $upload_dir . $file_name;
-                
-                // Move uploaded file
-                if (move_uploaded_file($file_tmp, $file_path)) {
-                    // Store image URL in database
-                    $image_url = 'assets/images/products/' . $file_name;
-                    $sql = "INSERT INTO product_images (product_id, image_url, is_main, sort_order) VALUES (?, ?, 0, ?)";
-                    $stmt = $pdo->prepare($sql);
-                    
-                    // Get next sort order
-                    $sort_order = count($images) + $i;
-                    $stmt->execute([$product_id, $image_url, $sort_order]);
-                }
-            }
-        }
-        
-        $_SESSION['success_message'] = "Images uploaded successfully!";
-        header('Location: edit-product.php?id=' . $product_id);
-        exit();
-    } else {
+    // Check what type of form submission
+    if (isset($_POST['update_product'])) {
         // Handle product update
         $name = trim($_POST['name']);
         $slug = trim($_POST['slug']);
@@ -99,7 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$sku, $product_id]);
         
         if ($stmt->rowCount() > 0) {
-            $error = "SKU already exists. Please use a different SKU.";
+            $_SESSION['error_message'] = "SKU already exists. Please use a different SKU.";
+            header('Location: edit-product.php?id=' . $product_id);
+            exit();
         } else {
             // Update product
             $sql = "UPDATE products SET 
@@ -121,6 +90,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: edit-product.php?id=' . $product_id);
             exit();
         }
+    } elseif (isset($_POST['upload_images'])) {
+        // Handle new image upload
+        if (isset($_FILES['new_images']) && !empty($_FILES['new_images']['name'][0])) {
+            $uploaded_count = 0;
+            
+            for ($i = 0; $i < count($_FILES['new_images']['name']); $i++) {
+                if ($_FILES['new_images']['error'][$i] == 0) {
+                    // Use the upload_product_image function from config.php
+                    $file = [
+                        'name' => $_FILES['new_images']['name'][$i],
+                        'type' => $_FILES['new_images']['type'][$i],
+                        'tmp_name' => $_FILES['new_images']['tmp_name'][$i],
+                        'error' => $_FILES['new_images']['error'][$i],
+                        'size' => $_FILES['new_images']['size'][$i]
+                    ];
+                    
+                    $result = upload_product_image($file, $product_id);
+                    
+                    if ($result['success']) {
+                        // First uploaded image becomes main if no images exist
+                        $is_main = (count($images) == 0 && $uploaded_count == 0) ? 1 : 0;
+                        
+                        // Insert into database
+                        $sql = "INSERT INTO product_images (product_id, image_url, is_main, sort_order) 
+                                VALUES (?, ?, ?, ?)";
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute([
+                            $product_id,
+                            $result['path'],
+                            $is_main,
+                            count($images) + $uploaded_count
+                        ]);
+                        
+                        $uploaded_count++;
+                    }
+                }
+            }
+            
+            if ($uploaded_count > 0) {
+                $_SESSION['success_message'] = "Successfully uploaded $uploaded_count image(s)!";
+            } else {
+                $_SESSION['error_message'] = "No images were uploaded. Please check file types (JPG, PNG, GIF, WebP) and size (max 5MB).";
+            }
+            
+            header('Location: edit-product.php?id=' . $product_id);
+            exit();
+        }
     }
 }
 ?>
@@ -130,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Product - WealShopping Admin</title>
-    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="<?php echo asset_url('css/admin.css'); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .form-container {
@@ -197,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         .existing-images {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -207,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid #ddd;
             border-radius: 5px;
             overflow: hidden;
-            height: 120px;
+            height: 150px;
         }
         
         .product-image img {
@@ -258,7 +274,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 0.75rem;
         }
         
-        /* New Image Upload Styles */
         .new-image-upload {
             border: 2px dashed #ddd;
             border-radius: 10px;
@@ -355,6 +370,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .delete-product-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .delete-product-btn:hover {
+            background: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -377,9 +407,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <?php endif; ?>
 
-            <?php if (isset($error)): ?>
+            <?php if (isset($_SESSION['error_message'])): ?>
             <div class="alert alert-danger">
-                <?php echo $error; ?>
+                <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
+            </div>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['warning_message'])): ?>
+            <div class="alert alert-warning">
+                <?php echo $_SESSION['warning_message']; unset($_SESSION['warning_message']); ?>
             </div>
             <?php endif; ?>
 
@@ -392,7 +428,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="existing-images" id="existingImages">
                         <?php foreach($images as $image): ?>
                         <div class="product-image" data-image-id="<?php echo $image['id']; ?>">
-                            <img src="<?php echo $image['image_url']; ?>" alt="Product Image">
+                            <img src="<?php echo get_product_image_url($image['image_url']); ?>" 
+                                 alt="Product Image"
+                                 onerror="this.src='<?php echo SITE_URL; ?>assets/images/still-life-rendering-jackets-display.jpg'">
                             <?php if ($image['is_main']): ?>
                             <span class="main-badge">Main</span>
                             <?php endif; ?>
@@ -428,7 +466,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <form method="POST" enctype="multipart/form-data" id="uploadForm">
                             <input type="hidden" name="upload_images" value="1">
                             <div id="imageInputsContainer"></div>
-                            <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 15px;" id="uploadImagesBtn" disabled>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 15px;" id="uploadImagesBtn" disabled>
                                 <i class="fas fa-upload"></i> Upload Selected Images
                             </button>
                         </form>
@@ -442,19 +480,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">Product Name *</label>
-                            <input type="text" id="name" name="name" class="form-control" value="<?php echo htmlspecialchars($product['name']); ?>" required>
+                            <input type="text" id="name" name="name" class="form-control" 
+                                   value="<?php echo htmlspecialchars($product['name']); ?>" required>
                         </div>
                         
                         <div class="form-group">
                             <label for="slug">URL Slug *</label>
-                            <input type="text" id="slug" name="slug" class="form-control" value="<?php echo htmlspecialchars($product['slug']); ?>" required>
+                            <input type="text" id="slug" name="slug" class="form-control" 
+                                   value="<?php echo htmlspecialchars($product['slug']); ?>" required>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="sku">SKU *</label>
-                            <input type="text" id="sku" name="sku" class="form-control" value="<?php echo htmlspecialchars($product['sku']); ?>" required>
+                            <input type="text" id="sku" name="sku" class="form-control" 
+                                   value="<?php echo htmlspecialchars($product['sku']); ?>" required>
                         </div>
                         
                         <div class="form-group">
@@ -462,7 +503,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <select id="category_id" name="category_id" class="form-control">
                                 <option value="">Select Category</option>
                                 <?php foreach($categories as $category): ?>
-                                <option value="<?php echo $category['id']; ?>" <?php echo $product['category_id'] == $category['id'] ? 'selected' : ''; ?>>
+                                <option value="<?php echo $category['id']; ?>" 
+                                    <?php echo $product['category_id'] == $category['id'] ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($category['name']); ?>
                                 </option>
                                 <?php endforeach; ?>
@@ -473,24 +515,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-row">
                         <div class="form-group">
                             <label for="price">Price (FCFA) *</label>
-                            <input type="number" id="price" name="price" class="form-control" step="0.01" min="0" value="<?php echo $product['price']; ?>" required>
+                            <input type="number" id="price" name="price" class="form-control" 
+                                   step="1000" min="0" value="<?php echo $product['price']; ?>" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="compare_price">Compare Price ($)</label>
-                            <input type="number" id="compare_price" name="compare_price" class="form-control" step="0.01" min="0" value="<?php echo $product['compare_price']; ?>">
+                            <label for="compare_price">Compare Price (FCFA)</label>
+                            <input type="number" id="compare_price" name="compare_price" class="form-control" 
+                                   step="1000" min="0" value="<?php echo $product['compare_price']; ?>">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="quantity">Quantity *</label>
-                            <input type="number" id="quantity" name="quantity" class="form-control" min="0" value="<?php echo $product['quantity']; ?>" required>
+                            <input type="number" id="quantity" name="quantity" class="form-control" 
+                                   min="0" value="<?php echo $product['quantity']; ?>" required>
                         </div>
                         
                         <div class="form-group">
                             <label for="brand">Brand</label>
-                            <input type="text" id="brand" name="brand" class="form-control" value="<?php echo htmlspecialchars($product['brand'] ?? ''); ?>">
+                            <input type="text" id="brand" name="brand" class="form-control" 
+                                   value="<?php echo htmlspecialchars($product['brand'] ?? ''); ?>">
                         </div>
                     </div>
                     
@@ -523,7 +569,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php else: ?>
                         <p style="color: #999; font-style: italic;">No attributes defined for this product.</p>
                         <?php endif; ?>
-                        <a href="manage-attributes.php?product_id=<?php echo $product_id; ?>" class="btn btn-sm btn-primary" style="margin-top: 10px;">
+                        <a href="manage-attributes.php?product_id=<?php echo $product_id; ?>" class="btn btn-primary" style="margin-top: 10px;">
                             <i class="fas fa-list"></i> Manage Attributes
                         </a>
                     </div>
@@ -531,14 +577,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-row">
                         <div class="form-group">
                             <div class="checkbox-group">
-                                <input type="checkbox" id="featured" name="featured" value="1" <?php echo $product['featured'] ? 'checked' : ''; ?>>
+                                <input type="checkbox" id="featured" name="featured" value="1" 
+                                       <?php echo $product['featured'] ? 'checked' : ''; ?>>
                                 <label for="featured">Featured Product</label>
                             </div>
                         </div>
                         
                         <div class="form-group">
                             <div class="checkbox-group">
-                                <input type="checkbox" id="is_active" name="is_active" value="1" <?php echo $product['is_active'] ? 'checked' : ''; ?>>
+                                <input type="checkbox" id="is_active" name="is_active" value="1" 
+                                       <?php echo $product['is_active'] ? 'checked' : ''; ?>>
                                 <label for="is_active">Active Product</label>
                             </div>
                         </div>
@@ -549,6 +597,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <i class="fas fa-save"></i> Update Product
                         </button>
                         <a href="products.php" class="btn">Cancel</a>
+                        <button type="button" class="btn delete-product-btn" 
+                                onclick="confirmDelete(<?php echo $product_id; ?>)">
+                            <i class="fas fa-trash"></i> Delete Product
+                        </button>
                     </div>
                 </form>
             </div>
@@ -572,7 +624,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const imageInput = document.getElementById('new_images');
         const imagePreview = document.getElementById('imagePreview');
         const uploadImagesBtn = document.getElementById('uploadImagesBtn');
-        const imageInputsContainer = document.getElementById('imageInputsContainer');
         let selectedFiles = [];
         
         imageInput.addEventListener('change', function() {
@@ -631,23 +682,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Create FormData object
             const formData = new FormData();
             formData.append('upload_images', '1');
             
-            // Append each file
             selectedFiles.forEach((file, index) => {
                 formData.append('new_images[]', file);
             });
             
-            // Send AJAX request
             fetch('edit-product.php?id=<?php echo $product_id; ?>', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.text())
             .then(data => {
-                // Reload page to show new images
                 location.reload();
             })
             .catch(error => {
@@ -656,19 +703,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
         
-        // Set image as main (AJAX)
+        // Set image as main
         document.querySelectorAll('.set-main-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const imageDiv = this.closest('.product-image');
                 const imageId = imageDiv.getAttribute('data-image-id');
                 
                 if (confirm('Set this image as main product image?')) {
-                    fetch('set-main-image.php', {
+                    const formData = new FormData();
+                    formData.append('image_id', imageId);
+                    formData.append('product_id', <?php echo $product_id; ?>);
+                    formData.append('set_main', '1');
+                    
+                    fetch('ajax-handlers.php', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: 'product_id=<?php echo $product_id; ?>&image_id=' + imageId
+                        body: formData
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -686,19 +735,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
         
-        // Delete image (AJAX)
+        // Delete image
         document.querySelectorAll('.delete-image-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const imageDiv = this.closest('.product-image');
                 const imageId = imageDiv.getAttribute('data-image-id');
                 
                 if (confirm('Are you sure you want to delete this image?')) {
-                    fetch('delete-image.php', {
+                    const formData = new FormData();
+                    formData.append('image_id', imageId);
+                    formData.append('product_id', <?php echo $product_id; ?>);
+                    formData.append('delete_image', '1');
+                    
+                    fetch('ajax-handlers.php', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: 'product_id=<?php echo $product_id; ?>&image_id=' + imageId
+                        body: formData
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -719,6 +770,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             });
         });
+        
+        // Confirm product deletion
+        function confirmDelete(productId) {
+            if (confirm('⚠️ WARNING: This will permanently delete this product and all its images!\n\nThis action cannot be undone.\n\nAre you sure you want to delete this product?')) {
+                window.location.href = 'delete-product.php?id=' + productId;
+            }
+        }
     </script>
 </body>
 </html>

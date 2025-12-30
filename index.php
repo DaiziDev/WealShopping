@@ -17,7 +17,7 @@ $categories = getCategories();
                     <p class="slide-subtitle">Discover exclusive designs for the modern lifestyle</p>
                     <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-primary">Shop Now</a>
                 </div>
-                <div class="slide-image" style="background-image: url('<?php echo asset_url('images/woman-shopping-thrift-store.jpg'); ?>');">
+                <div class="slide-image" style="background-image: url('<?php echo asset_url('images/woman-shopping-thrift-store.jpg'); ?>');" aria-label="Woman shopping in thrift store">
                 </div>
             </div>
             <div class="slide">
@@ -26,7 +26,7 @@ $categories = getCategories();
                     <p class="slide-subtitle">Step into comfort with our luxury shoe collection</p>
                     <a href="<?php echo page_url('shop.php?category=footwear'); ?>" class="btn btn-primary">Explore Shoes</a>
                 </div>
-                <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');">
+                <div class="slide-image" style="background-image: url('https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');" aria-label="Premium footwear collection">
                 </div>
             </div>
             <div class="slide">
@@ -35,18 +35,18 @@ $categories = getCategories();
                     <p class="slide-subtitle">Lightweight fabrics and vibrant colors</p>
                     <a href="<?php echo page_url('shop.php'); ?>" class="btn btn-primary">View Collection</a>
                 </div>
-                <div class="slide-image" style="background-image: url('../fashion-shop/assets/images/accesories.jpg');">
+                <div class="slide-image" style="background-image: url('../fashion-shop/assets/images/accesories.jpg');" aria-label="Summer accessories collection">
                 </div>
             </div>
         </div>
         <div class="slider-controls">
-            <button class="slider-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="slider-prev" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
             <div class="slider-dots">
-                <span class="dot active"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
+                <span class="dot active" aria-label="Slide 1"></span>
+                <span class="dot" aria-label="Slide 2"></span>
+                <span class="dot" aria-label="Slide 3"></span>
             </div>
-            <button class="slider-next"><i class="fas fa-chevron-right"></i></button>
+            <button class="slider-next" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
         </div>
     </section>
 
@@ -59,7 +59,7 @@ $categories = getCategories();
             <div class="categories-grid">
                 <!-- Category 1: Clothing -->
                 <div class="category-card">
-                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/womens.jpg'); ?>');">
+                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/womens.jpg'); ?>');" aria-label="Clothing collection">
                     </div>
                     <div class="category-content">
                         <h3>Clothing</h3>
@@ -70,7 +70,7 @@ $categories = getCategories();
                 
                 <!-- Category 2: Footwear -->
                 <div class="category-card">
-                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/footwear.jpg'); ?>');">
+                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/footwear.jpg'); ?>');" aria-label="Footwear collection">
                     </div>
                     <div class="category-content">
                         <h3>Footwear</h3>
@@ -81,7 +81,7 @@ $categories = getCategories();
                 
                 <!-- Category 3: Accessories -->
                 <div class="category-card">
-                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/accesories2.jpg'); ?>');">
+                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/accesories2.jpg'); ?>');" aria-label="Accessories collection">
                     </div>
                     <div class="category-content">
                         <h3>Accessories</h3>
@@ -92,7 +92,7 @@ $categories = getCategories();
                 
                 <!-- Category 4: Bags -->
                 <div class="category-card">
-                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/bags.jpg'); ?>');">
+                    <div class="category-image" style="background-image: url('<?php echo asset_url('images/bags.jpg'); ?>');" aria-label="Bags and luggage collection">
                     </div>
                     <div class="category-content">
                         <h3>Bags & Luggage</h3>
@@ -124,13 +124,13 @@ $categories = getCategories();
                         $compare_price_fcfa = $product['compare_price'] ? $product['compare_price'] : null;
                     ?>
                     <div class="product-card">
-                        <div class="product-image" style="background-image: url('<?php echo $image_url; ?>');">
+                        <div class="product-image" style="background-image: url('<?php echo $image_url; ?>');" aria-label="<?php echo htmlspecialchars($product['name']); ?>">
                             <?php if ($compare_price_fcfa && $compare_price_fcfa > $price_fcfa): ?>
                             <span class="product-badge sale">Promotion</span>
                             <?php else: ?>
                             <span class="product-badge">Nouveau</span>
                             <?php endif; ?>
-                            <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>">
+                            <button class="wishlist-btn" data-product-id="<?php echo $product['id']; ?>" aria-label="Add to wishlist">
                                 <i class="far fa-heart"></i>
                             </button>
                         </div>
@@ -147,7 +147,8 @@ $categories = getCategories();
                                     data-product-id="<?php echo $product['id']; ?>" 
                                     data-product-name="<?php echo htmlspecialchars($product['name']); ?>" 
                                     data-product-price="<?php echo $price_fcfa; ?>"
-                                    data-image-url="<?php echo htmlspecialchars($image_url); ?>">
+                                    data-image-url="<?php echo htmlspecialchars($image_url); ?>"
+                                    aria-label="Add <?php echo htmlspecialchars($product['name']); ?> to cart">
                                 Ajouter au panier
                             </button>
                         </div>
@@ -199,7 +200,7 @@ $categories = getCategories();
                         </div>
                     </div>
                 </div>
-                <div class="about-image" style="background-image: url('<?php echo asset_url('images/WealShopping.png'); ?>');">
+                <div class="about-image" style="background-image: url('<?php echo asset_url('images/WealShopping.png'); ?>');" aria-label="WealShopping store">
                 </div>
             </div>
         </div>

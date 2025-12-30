@@ -53,7 +53,7 @@ require_once '../includes/header.php';
                     <?php foreach ($product_images as $image): ?>
                     <div class="thumbnail <?php echo $image['is_main'] ? 'active' : ''; ?>" 
                          data-image="<?php echo $image['image_url']; ?>">
-                        <img src="<?php echo $image['image_url']; ?>" alt="<?php echo $image['alt_text']; ?>">
+                        <img src="http://localhost/fashion-shop/<?php echo $image['image_url']; ?>" alt ="<?php echo $image['alt_text']; ?>">
                     </div>
                     <?php endforeach; ?>
                 </div>

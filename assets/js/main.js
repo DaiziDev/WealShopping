@@ -406,7 +406,95 @@ function showNotification(message, type = 'info') {
         }, 300);
     });
 }
-
+// Mobile improvements for shop page
+document.addEventListener('DOMContentLoaded', function() {
+    // Improve filter form on mobile
+    const priceFilterForm = document.querySelector('.price-filter');
+    if (priceFilterForm && window.innerWidth <= 768) {
+        // Add mobile-friendly styling
+        const inputs = priceFilterForm.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.setAttribute('inputmode', 'numeric');
+            input.setAttribute('pattern', '[0-9]*');
+        });
+        
+        // Add clear button functionality
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.className = 'btn btn-sm btn-outline';
+        clearBtn.textContent = 'Clear';
+        clearBtn.style.marginLeft = '10px';
+        clearBtn.addEventListener('click', function() {
+            inputs.forEach(input => input.value = '');
+            priceFilterForm.submit();
+        });
+        
+        const submitBtn = priceFilterForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.parentNode.insertBefore(clearBtn, submitBtn.nextSibling);
+        }
+    }
+    
+    // Improve sort dropdown on mobile
+    const sortSelect = document.getElementById('sortSelect');
+    if (sortSelect && window.innerWidth <= 768) {
+        sortSelect.style.minWidth = '150px';
+        sortSelect.style.padding = '10px';
+    }
+    
+    // Add touch feedback for product cards on mobile
+    if ('ontouchstart' in window) {
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            card.style.cursor = 'pointer';
+            
+            // Add touch feedback
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+                this.style.transition = 'transform 0.1s';
+            });
+            
+            card.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    }
+});
+// ===== Slider Navigation by Clicking Images =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all slide images
+    const slideImages = document.querySelectorAll('.slide-image');
+    
+    // Add click event to each image
+    slideImages.forEach((image, index) => {
+        image.addEventListener('click', function() {
+            // Get current active slide
+            const currentSlide = document.querySelector('.slide.active');
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            // Find current slide index
+            let currentIndex = 0;
+            slides.forEach((slide, i) => {
+                if (slide === currentSlide) currentIndex = i;
+            });
+            
+            // Calculate next slide index
+            let nextIndex = (currentIndex + 1) % slides.length;
+            
+            // Remove active class from all
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            // Add active class to next
+            slides[nextIndex].classList.add('active');
+            dots[nextIndex].classList.add('active');
+        });
+        
+        // Add cursor pointer to indicate clickable
+        image.style.cursor = 'pointer';
+    });
+});
 // Add notification styles
 const notificationStyles = document.createElement('style');
 notificationStyles.textContent = `

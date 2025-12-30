@@ -1,4 +1,5 @@
-/* ===== Enhanced Responsive Styles ===== */
+/* ===== ENHANCED RESPONSIVE STYLES ===== */
+
 /* Mobile Menu Fixes */
 .menu-toggle {
     display: none !important;
@@ -53,7 +54,7 @@
     transform: translateX(0);
 }
 
-/* Show menu toggle only on mobile */
+/* Show menu toggle on mobile */
 @media (max-width: 992px) {
     .menu-toggle {
         display: flex !important;
@@ -69,345 +70,632 @@ body.menu-open {
     overflow: hidden !important;
 }
 
-/* Debug styles */
-#menuToggle.debug {
-    background: red !important;
-    border: 2px solid yellow !important;
-}
-/* Large Tablets */
-@media (max-width: 1024px) {
-    .container {
-        padding: 0 20px;
-    }
-    
-    .auth-container {
-        grid-template-columns: 1fr;
-        min-height: auto;
-    }
-    
-    .auth-container.reverse {
-        grid-template-columns: 1fr;
-    }
-    
-    .auth-image {
-        height: 300px;
-        min-height: 300px;
-        order: -1;
-    }
-    
-    .auth-form {
-        padding: 2.5rem;
-    }
-    
-    .categories-grid,
-    .products-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .shop-content {
+/* ===== ADJUSTABLE HERO SLIDER FOR CLEAR IMAGES ===== */
+/* You can adjust these values to control image visibility */
+
+/* Tablet */
+@media (max-width: 992px) {
+    .hero-slider {
+        display: flex;
         flex-direction: column;
     }
     
-    .shop-sidebar {
-        width: 100%;
-        margin-bottom: 30px;
+    /* Image takes 60% of height - CHANGE THIS VALUE */
+    .slide-image {
+        height: 60%; /* Adjust this percentage to control image size */
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    
+    /* Text container takes remaining space */
+    .slide-content {
+        height: 40%;
+        overflow-y: auto;
+    }
+    
+    /* Remove overlay for clear image */
+    .slide-image::before,
+    .slide-image::after {
+        opacity: 0.3; /* Reduce overlay for better image visibility */
     }
 }
 
-/* Tablets */
+/* Mobile */
 @media (max-width: 768px) {
-    .auth-section {
-        padding-top: 80px;
-        padding-bottom: 40px;
+    /* Image takes 55% of height - CHANGE THIS VALUE */
+    .slide-image {
+        height: 55%; /* Adjust this percentage */
     }
     
-    .auth-form {
-        padding: 2rem;
-    }
-    
-    .auth-form h2 {
-        font-size: 1.8rem;
-    }
-    
-    .auth-subtitle {
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-group {
-        margin-bottom: 1.2rem;
-    }
-    
-    /* Fix for form row on mobile */
-    .row {
-        flex-direction: column;
-        margin: 0;
-    }
-    
-    .row .col-6 {
-        width: 100%;
-        padding: 0;
-        margin-bottom: 1rem;
-    }
-    
-    .row .col-6:last-child {
-        margin-bottom: 0;
-    }
-    
-    /* Password toggle adjustments */
-    .password-toggle {
-        position: relative;
-    }
-    
-    .password-toggle .form-control {
-        padding-right: 50px;
-    }
-    
-    .password-toggle-btn {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        color: var(--gray-color);
-        transition: var(--transition-fast);
-    }
-    
-    .password-toggle-btn:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-    }
-    
-    /* Button adjustments */
-    .btn {
-        padding: 0.85rem 1.5rem;
-        font-size: 1rem;
-    }
-    
-    .btn-block {
-        width: 100%;
-    }
-    
-    /* Alert adjustments */
-    .alert {
-        padding: 0.875rem 1.25rem;
-        margin-bottom: 1.25rem;
-        font-size: 0.9rem;
-    }
-    
-    .auth-links {
-        margin-top: 1.25rem;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-    
-    .auth-links a {
-        text-align: center;
-        padding: 0.5rem;
-        font-size: 0.9rem;
+    .slide-content {
+        height: 45%;
     }
 }
 
 /* Small Mobile */
 @media (max-width: 576px) {
-    .auth-section {
-        padding: 60px 15px 30px;
+    /* Image takes 50% of height - CHANGE THIS VALUE */
+    .slide-image {
+        height: 50%; /* Adjust this percentage */
+    }
+    
+    .slide-content {
+        height: 50%;
+    }
+}
+
+/* VERY CLEAR IMAGE OPTION - Use this if you want image to dominate */
+@media (max-width: 992px) {
+    .hero-slider.clear-image .slide-image {
+        height: 70%; /* Image takes 70% - VERY VISIBLE */
+        min-height: 400px;
+    }
+    
+    .hero-slider.clear-image .slide-content {
+        height: 30%;
+        background: rgba(255, 255, 255, 0.95);
+        margin-top: -50px;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        position: relative;
+        z-index: 2;
+    }
+}
+
+/* ===== ABOUT SECTION - PROPER STACKING FIX ===== */
+@media (max-width: 992px) {
+    .about-section {
+        padding: var(--spacing-md) 0;
+    }
+    
+    .about-content {
+        text-align: center;
+    }
+    
+    .about-features {
+        justify-content: center;
+    }
+    
+    .feature {
+        text-align: center;
+        padding: 20px;
+    }
+}
+
+/* ===== IMPROVED PRODUCT GRID ===== */
+@media (max-width: 768px) {
+    .product-card {
+        transition: transform 0.2s ease;
+    }
+    
+    .product-card:active {
+        transform: scale(0.98);
+    }
+    
+    .add-to-cart {
+        width: 100%;
+    }
+}
+
+/* ===== CATEGORIES GRID FIX ===== */
+@media (max-width: 992px) {
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+/* ===== SHOP PAGE FIXES ===== */
+@media (max-width: 992px) {
+    .shop-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .shop-sidebar {
+        position: static;
+        margin-bottom: 30px;
+    }
+    
+    .filter-section {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .shop-toolbar {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .sort-by {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/* ===== AUTH PAGES FIXES ===== */
+@media (max-width: 992px) {
+    .auth-container {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+    
+    .auth-image {
+        height: 250px;
+        min-height: 250px;
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-form {
+        padding: 25px 20px;
+    }
+    
+    .auth-form h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* ===== FOOTER FIXES ===== */
+@media (max-width: 992px) {
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .footer-col {
+        text-align: center;
+    }
+    
+    .footer-col h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .social-links {
+        justify-content: center;
+    }
+    
+    .contact-info li {
+        justify-content: center;
+    }
+}
+
+/* ===== GENERAL MOBILE IMPROVEMENTS ===== */
+@media (max-width: 768px) {
+    /* Better touch targets */
+    .btn, 
+    .nav-link,
+    .mobile-nav a,
+    .icon-btn {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Prevent zoom on input focus in iOS */
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+    
+    /* Improve readability */
+    body {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+    
+    /* Better spacing */
+    .section-padding {
+        padding: var(--spacing-md) 0;
+    }
+    
+    .container {
+        padding: 0 15px;
+    }
+}
+
+/* ===== VERY SMALL SCREENS ===== */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.6rem;
+    }
+    
+    h3 {
+        font-size: 1.3rem;
+    }
+    
+    .btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .container {
+        padding: 0 10px;
+    }
+}
+
+/* ===== LANDSCAPE ORIENTATION ===== */
+@media (max-height: 600px) and (orientation: landscape) {
+    .hero {
+        height: 100vh;
+    }
+    
+    .slide-image {
+        height: 70%; /* Image takes more space in landscape */
+    }
+    
+    .slide-content {
+        height: 30%;
+        padding: 15px;
+    }
+    
+    .slide-title {
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .slide-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* ===== HIGH DPI SCREENS ===== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .slide-image {
+        background-size: cover;
+        background-position: center;
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .hero,
+    .slider-controls,
+    .nav-icons,
+    .menu-toggle,
+    .preloader,
+    .back-to-top {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        color: black;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+    
+    a {
+        color: black;
+        text-decoration: none;
+    }
+}
+/* ===== SHOP PAGE RESPONSIVE STYLES WITH LARGE IMAGES ===== */
+
+/* Tablet View (992px and below) */
+@media (max-width: 992px) {
+    .shop-section {
+        padding-top: 80px;
+    }
+    
+    .shop-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .shop-sidebar {
+        position: static;
+        margin-bottom: 30px;
+        padding: 25px;
+    }
+    
+    .shop-main .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    /* LARGER IMAGES on Tablet */
+    .shop-main .product-image {
+        height: 280px; /* Increased from 250px */
+        background-size: contain; /* Show full product without cropping */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #f8f9fa; /* Add background for transparent images */
+    }
+}
+
+/* Mobile View (768px and below) */
+@media (max-width: 768px) {
+    .shop-section {
+        padding-top: 70px;
+    }
+    
+    .shop-header {
+        margin-bottom: 25px;
+    }
+    
+    .page-title {
+        font-size: 1.8rem;
+    }
+    
+    .shop-sidebar {
+        padding: 20px;
+    }
+    
+    .price-inputs {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .price-inputs input {
+        width: 100%;
+    }
+    
+    .shop-main {
+        padding: 20px;
+    }
+    
+    .shop-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .sort-by {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .shop-main .products-grid {
+        grid-template-columns: repeat(2, 1fr); /* Keep 2 columns on mobile for larger images */
+        gap: 15px;
+    }
+    
+    /* VERY LARGE IMAGES on Mobile - E-commerce style */
+    .shop-main .product-image {
+        height: 240px; /* Large height for product visibility */
+        background-size: contain; /* Show complete product */
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #f8f9fa;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    
+    .product-card {
+        border: 1px solid var(--light-gray);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+    
+    .product-info {
+        padding: 15px;
+    }
+    
+    .product-title {
+        font-size: 1rem;
+        line-height: 1.3;
+    }
+    
+    .product-title a {
+        color: var(--dark-color);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .product-title a:hover {
+        color: var(--secondary-color);
+    }
+    
+    .product-card .add-to-cart {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+        min-height: 44px;
+        font-weight: 600;
+    }
+}
+
+/* Single Column on Very Small Mobile (576px and below) */
+@media (max-width: 576px) {
+    .shop-section {
+        padding: 60px 0 30px;
     }
     
     .container {
         padding: 0 15px;
     }
     
-    .auth-container {
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-md);
+    .shop-main .products-grid {
+        grid-template-columns: 1fr; /* Single column for very small screens */
+        gap: 20px;
     }
     
-    .auth-image {
-        height: 200px;
-        min-height: 200px;
+    /* EXTRA LARGE IMAGES on Very Small Mobile */
+    .shop-main .product-image {
+        height: 280px; /* Even larger on single column */
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
     }
     
-    .auth-form {
-        padding: 1.5rem;
+    .product-card {
+        max-width: 100%;
+        margin: 0;
     }
     
-    .auth-form h2 {
-        font-size: 1.6rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .auth-subtitle {
-        font-size: 0.95rem;
-        margin-bottom: 1.25rem;
-    }
-    
-    /* Form input adjustments */
-    .form-control {
-        padding: 0.7rem 0.875rem;
-        font-size: 0.95rem;
-    }
-    
-    .form-group label {
-        font-size: 0.9rem;
-        margin-bottom: 0.375rem;
-    }
-    
-    /* Password toggle for small screens */
-    .password-toggle .form-control {
-        padding-right: 45px;
-        font-size: 0.95rem;
-    }
-    
-    .password-toggle-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
-    }
-    
-    /* Button adjustments */
-    .btn {
-        padding: 0.8rem 1.25rem;
-        font-size: 0.95rem;
-    }
-    
-    /* Alert for small screens */
-    .alert {
-        padding: 0.75rem 1rem;
-        font-size: 0.85rem;
-        margin-bottom: 1rem;
-    }
-    
-    /* Additional spacing for better touch targets */
-    .form-group {
-        margin-bottom: 1rem;
-    }
-    
-    /* Make form inputs easier to tap */
-    input, button, .btn {
-        min-height: 44px; /* Minimum touch target size */
+    /* Ensure product images have enough space */
+    .product-info {
+        padding: 20px;
     }
 }
 
-/* Very Small Mobile */
-@media (max-width: 400px) {
-    .auth-section {
-        padding: 50px 10px 20px;
+/* Extra Large Images Option for E-commerce */
+@media (max-width: 480px) {
+    .shop-main .product-image {
+        height: 300px; /* Maximum height for clarity */
     }
     
-    .container {
-        padding: 0 10px;
+    .product-title {
+        font-size: 1.1rem; /* Slightly larger text */
     }
     
-    .auth-form {
-        padding: 1.25rem;
-    }
-    
-    .auth-form h2 {
-        font-size: 1.4rem;
-    }
-    
-    .auth-subtitle {
-        font-size: 0.9rem;
-    }
-    
-    .form-control {
-        padding: 0.6rem 0.75rem;
-        font-size: 0.9rem;
-    }
-    
-    .btn {
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-    }
-    
-    .alert {
-        padding: 0.625rem 0.875rem;
-        font-size: 0.8rem;
+    .product-price .product-price {
+        font-size: 1.3rem; /* Larger price text */
+        font-weight: 700;
+        color: var(--secondary-color);
     }
 }
 
-/* Fix for landscape orientation on mobile */
+/* Landscape Orientation - Keep images large */
 @media (max-height: 600px) and (orientation: landscape) {
-    .auth-section {
+    .shop-section {
         padding-top: 70px;
-        padding-bottom: 20px;
     }
     
-    .auth-container {
-        min-height: auto;
+    .shop-main .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
     }
     
-    .auth-image {
-        height: 150px;
-        min-height: 150px;
-    }
-    
-    .auth-form {
-        padding: 1.25rem;
-        max-height: calc(100vh - 220px);
-        overflow-y: auto;
-    }
-    
-    .form-group {
-        margin-bottom: 0.75rem;
-    }
-    
-    .btn {
-        padding: 0.6rem 1rem;
+    .shop-main .product-image {
+        height: 200px; /* Adjust for landscape but still large */
+        background-size: contain;
     }
 }
 
-/* Fix for Safari Mobile input zoom */
-@media screen and (max-width: 767px) {
-    input,
-    select,
-    textarea {
-        font-size: 16px; /* Prevents zoom on focus in iOS Safari */
+/* Special Class for Extra Large Images */
+.shop-main .large-images .product-image {
+    height: 320px !important;
+}
+
+.shop-main .xlarge-images .product-image {
+    height: 350px !important;
+}
+
+/* Product Image Zoom on Hover (Desktop only) */
+@media (min-width: 769px) {
+    .product-image {
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover .product-image {
+        transform: scale(1.05);
     }
 }
 
-/* High-resolution screens */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .auth-container {
-        box-shadow: var(--shadow-lg);
+/* Touch-friendly image interaction for mobile */
+@media (max-width: 768px) {
+    .product-image {
+        position: relative;
+        cursor: pointer;
     }
     
-    .form-control:focus {
-        box-shadow: 0 0 0 4px rgba(255, 77, 109, 0.1);
+    /* Add a subtle indicator that image is important */
+    .product-image::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 2px solid rgba(255, 77, 109, 0.1);
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        pointer-events: none;
     }
 }
 
-/* Print styles */
-@media print {
-    .auth-section {
-        padding: 0;
-        min-height: auto;
-    }
-    
-    .auth-container {
-        box-shadow: none;
-        border: 1px solid #ddd;
-        min-height: auto;
-    }
-    
-    .auth-image {
-        display: none;
-    }
-    
-    .auth-form {
-        padding: 1rem;
-    }
-    
-    .btn {
-        display: none;
-    }
+/* Improve product card layout for better image visibility */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.product-image {
+    flex: 0 0 auto; /* Don't grow or shrink */
+}
+
+.product-info {
+    flex: 1; /* Take remaining space */
+    display: flex;
+    flex-direction: column;
+}
+
+.product-title {
+    flex: 0 0 auto;
+}
+
+.product-category {
+    flex: 0 0 auto;
+}
+
+.product-price {
+    flex: 0 0 auto;
+    margin-top: auto; /* Push to bottom */
+    margin-bottom: 15px;
+}
+
+.product-card .add-to-cart {
+    flex: 0 0 auto;
+    margin-top: auto; /* Ensure button stays at bottom */
+}
+
+/* Ensure consistent image display */
+.product-image {
+    background-color: #f8f9fa; /* Light background for transparent PNGs */
+    background-size: contain; /* Show entire product without cropping */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* For products with white background, ensure contrast */
+.product-image[style*="background"] {
+    background-color: #f8f9fa;
+}
+
+/* ===== UTILITY CLASSES FOR IMAGE ADJUSTMENT ===== */
+/* Add these to your HTML to control image size on mobile */
+.image-small .slide-image { height: 40%; }
+.image-medium .slide-image { height: 50%; }
+.image-large .slide-image { height: 60%; }
+.image-xlarge .slide-image { height: 70%; }
+
+@media (max-width: 768px) {
+    .image-small .slide-image { height: 45%; }
+    .image-medium .slide-image { height: 55%; }
+    .image-large .slide-image { height: 65%; }
+    .image-xlarge .slide-image { height: 75%; }
+}
+
+@media (max-width: 576px) {
+    .image-small .slide-image { height: 40%; }
+    .image-medium .slide-image { height: 50%; }
+    .image-large .slide-image { height: 60%; }
+    .image-xlarge .slide-image { height: 70%; }
 }

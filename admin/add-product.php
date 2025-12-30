@@ -53,59 +53,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Handle image upload
         $uploaded_images = 0;
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
-            $upload_dir = '../../assets/images/products/';  // Add products folder
-            
-            // Create directory if it doesn't exist
-            if (!file_exists($upload_dir)) {
-                if (!mkdir($upload_dir, 0777, true)) {
-                    $_SESSION['error_message'] = 'Failed to create upload directory. Check permissions.';
-                    header('Location: add-product.php');
-                    exit();
-                }
-            }
-            
-            // Process each uploaded file
             $main_image_set = false;
             
             for ($i = 0; $i < count($_FILES['images']['name']); $i++) {
                 if ($_FILES['images']['error'][$i] == 0) {
-                    // Get file extension
-                    $file_extension = strtolower(pathinfo($_FILES['images']['name'][$i], PATHINFO_EXTENSION));
+                    // Create a file array for the current file
+                    $file = [
+                        'name' => $_FILES['images']['name'][$i],
+                        'type' => $_FILES['images']['type'][$i],
+                        'tmp_name' => $_FILES['images']['tmp_name'][$i],
+                        'error' => $_FILES['images']['error'][$i],
+                        'size' => $_FILES['images']['size'][$i]
+                    ];
                     
-                    // Generate safe filename - replace spaces with underscores and remove special chars
-                    $original_name = pathinfo($_FILES['images']['name'][$i], PATHINFO_FILENAME);
-                    $safe_name = preg_replace('/[^a-zA-Z0-9_-]/', '_', $original_name);
-                    $file_name = time() . '_' . $i . '_' . $safe_name . '.' . $file_extension;
-                    $file_tmp = $_FILES['images']['tmp_name'][$i];
-                    $file_path = $upload_dir . $file_name;
+                    $result = upload_product_image($file, $product_id);
                     
-                    // Check file type
-                    $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                    if (!in_array($file_extension, $allowed_extensions)) {
-                        $_SESSION['warning_message'] = "Skipped invalid file type: " . $_FILES['images']['name'][$i] . ". Only JPG, PNG, GIF, and WebP are allowed.";
-                        continue;
-                    }
-                    
-                    // Check file size (max 5MB)
-                    if ($_FILES['images']['size'][$i] > 5242880) {
-                        $_SESSION['warning_message'] = "Skipped large file: " . $_FILES['images']['name'][$i] . ". Maximum size is 5MB.";
-                        continue;
-                    }
-                    
-                    if (move_uploaded_file($file_tmp, $file_path)) {
+                    if ($result['success']) {
                         // First image is set as main
                         $is_main = $main_image_set ? 0 : 1;
                         $main_image_set = true;
                         
-                        // Store image URL in database - store as 'assets/images/filename.jpg' / CHANGED: Removed /products/
-                        $image_url = 'assets/images/products/' . $file_name;  // Add products folder
+                        // Store image URL in database
+                        $image_url = $result['path'];
                         $sql = "INSERT INTO product_images (product_id, image_url, is_main, sort_order) VALUES (?, ?, ?, ?)";
                         $stmt = $pdo->prepare($sql);
                         $stmt->execute([$product_id, $image_url, $is_main, $i]);
                         
                         $uploaded_images++;
                     } else {
-                        $_SESSION['warning_message'] = "Failed to upload image: " . $_FILES['images']['name'][$i];
+                        if (!isset($_SESSION['warning_message'])) {
+                            $_SESSION['warning_message'] = '';
+                        }
+                        $_SESSION['warning_message'] .= "Failed to upload image: " . $_FILES['images']['name'][$i] . " - " . implode(', ', $result['errors']) . "<br>";
                     }
                 }
             }
