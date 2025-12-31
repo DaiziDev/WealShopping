@@ -298,23 +298,42 @@ if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
-// Calculate cart total
+// Calculate cart total - KEEP ONLY ONE COPY
 function getCartTotal() {
     $total = 0;
     if (isset($_SESSION['cart'])) {
         foreach ($_SESSION['cart'] as $item) {
-            $total += $item['price'] * $item['quantity'];
+            if (isset($item['price'], $item['quantity'])) {
+                $total += (float)$item['price'] * (int)$item['quantity'];
+            }
         }
     }
     return $total;
 }
 
-// Get cart count
+function getCartItems() {
+    if (!isset($_SESSION['cart'])) {
+        return [];
+    }
+    
+    $validItems = [];
+    foreach ($_SESSION['cart'] as $item) {
+        // Validate item structure
+        if (isset($item['id'], $item['name'], $item['price'], $item['quantity'])) {
+            $validItems[] = $item;
+        }
+    }
+    
+    return $validItems;
+}
+// Get cart count - KEEP ONLY ONE COPY
 function getCartCount() {
     $count = 0;
     if (isset($_SESSION['cart'])) {
         foreach ($_SESSION['cart'] as $item) {
-            $count += $item['quantity'];
+            if (isset($item['quantity'])) {
+                $count += (int)$item['quantity'];
+            }
         }
     }
     return $count;
@@ -412,4 +431,5 @@ function getUserById($user_id) {
     $stmt->execute([$user_id]);
     return $stmt->fetch();
 }
+
 ?>
